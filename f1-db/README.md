@@ -1,0 +1,1 @@
+A PostgreSQL relational database that stores complete, historical Formula 1 statistics. The architecture relies on an automated initialization process that fetches the latest CSV dumps from the Jolpica project on startup, and then loads the data into the table structure using a dedicated init.sql script.

@@ -1,0 +1,1 @@
+An API server created using the NestJS framework, acting as a middleware layer between the database and the frontend. It uses Prisma ORM for secure and type-safe communication with the PostgreSQL database. The backend processes raw racing data and exposes standardized REST endpoints (e.g., /api/latest-podium), isolating the frontend from complex SQL queries.

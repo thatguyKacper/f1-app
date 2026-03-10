@@ -1,0 +1,280 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model formula_one_baseteam {
+  id               Int                @id @default(autoincrement())
+  api_id           String?            @db.VarChar(255)
+  name             String?            @db.VarChar(255)
+  formula_one_team formula_one_team[]
+}
+
+model formula_one_championshipadjustment {
+  id                 Int                 @id @default(autoincrement())
+  adjustment         Int?
+  api_id             String?             @db.VarChar(255)
+  driver_id          Int?
+  points             Float?
+  season_id          Int?
+  team_id            Int?
+  formula_one_driver formula_one_driver? @relation(fields: [driver_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_season formula_one_season? @relation(fields: [season_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_team   formula_one_team?   @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model formula_one_championshipsystem {
+  id                      Int                  @id @default(autoincrement())
+  api_id                  String?              @db.VarChar(255)
+  driver_best_results     Int?
+  driver_season_split     Int?
+  eligibility             Int?
+  name                    String?              @db.VarChar(255)
+  reference               String?              @db.VarChar(255)
+  team_best_results       Int?
+  team_points_per_session Int?
+  team_season_split       Int?
+  formula_one_season      formula_one_season[]
+}
+
+model formula_one_circuit {
+  id                Int                 @id @default(autoincrement())
+  altitude          Int?
+  api_id            String?             @db.VarChar(255)
+  country           String?             @db.VarChar(255)
+  country_code      String?             @db.VarChar(3)
+  latitude          Float?
+  locality          String?             @db.VarChar(255)
+  longitude         Float?
+  name              String?             @db.VarChar(255)
+  reference         String?             @db.VarChar(255)
+  wikipedia         String?             @db.VarChar(255)
+  formula_one_round formula_one_round[]
+}
+
+model formula_one_driver {
+  id                                 Int                                  @id @default(autoincrement())
+  abbreviation                       String?                              @db.VarChar(10)
+  api_id                             String?                              @db.VarChar(255)
+  country_code                       String?                              @db.VarChar(3)
+  date_of_birth                      DateTime?                            @db.Date
+  forename                           String?                              @db.VarChar(255)
+  nationality                        String?                              @db.VarChar(255)
+  permanent_car_number               Int?
+  reference                          String?                              @db.VarChar(255)
+  surname                            String?                              @db.VarChar(255)
+  wikipedia                          String?                              @db.VarChar(255)
+  formula_one_championshipadjustment formula_one_championshipadjustment[]
+  formula_one_driverchampionship     formula_one_driverchampionship[]
+  formula_one_teamdriver             formula_one_teamdriver[]
+}
+
+model formula_one_driverchampionship {
+  id                  Int                  @id @default(autoincrement())
+  adjustment_type     Int?
+  driver_id           Int?
+  highest_finish      Int?
+  is_eligible         Boolean?
+  points              Float?
+  position            Int?
+  round_id            Int?
+  round_number        Int?
+  season_id           Int?
+  session_id          Int?
+  session_number      Int?
+  win_count           Int?
+  year                Int?
+  formula_one_driver  formula_one_driver?  @relation(fields: [driver_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_round   formula_one_round?   @relation(fields: [round_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_season  formula_one_season?  @relation(fields: [season_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_session formula_one_session? @relation(fields: [session_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model formula_one_lap {
+  id                       Int                       @id @default(autoincrement())
+  api_id                   String?                   @db.VarChar(255)
+  average_speed            Float?
+  is_deleted               Boolean?
+  is_entry_fastest_lap     Boolean?
+  number                   Int?
+  position                 Int?
+  session_entry_id         Int?
+  time                     String?                   @db.VarChar(255)
+  formula_one_sessionentry formula_one_sessionentry? @relation(fields: [session_entry_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_pitstop      formula_one_pitstop[]
+}
+
+model formula_one_penalty {
+  id                    Int      @id @default(autoincrement())
+  api_id                String?  @db.VarChar(255)
+  earned_id             Int?
+  is_time_served_in_pit Boolean?
+  license_points        Int?
+  position              Int?
+  served_id             Int?
+  time                  String?  @db.VarChar(255)
+}
+
+model formula_one_pitstop {
+  id                       Int                       @id @default(autoincrement())
+  api_id                   String?                   @db.VarChar(255)
+  duration                 String?                   @db.VarChar(255)
+  lap_id                   Int?
+  local_timestamp          DateTime?                 @db.Time(6)
+  number                   Int?
+  session_entry_id         Int?
+  formula_one_lap          formula_one_lap?          @relation(fields: [lap_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_sessionentry formula_one_sessionentry? @relation(fields: [session_entry_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model formula_one_pointsystem {
+  id                     Int                   @id @default(autoincrement())
+  api_id                 String?               @db.VarChar(255)
+  driver_fastest_lap     Int?
+  driver_position_points Int?
+  is_double_points       Boolean?
+  name                   String?               @db.VarChar(255)
+  partial                Int?
+  reference              String?               @db.VarChar(255)
+  shared_drive           Int?
+  team_fastest_lap       Int?
+  team_position_points   Int?
+  formula_one_session    formula_one_session[]
+}
+
+model formula_one_round {
+  id                             Int                              @id @default(autoincrement())
+  api_id                         String?                          @db.VarChar(255)
+  circuit_id                     Int?
+  date                           DateTime?                        @db.Date
+  is_cancelled                   Boolean?
+  name                           String?                          @db.VarChar(255)
+  number                         Int?
+  race_number                    Int?
+  season_id                      Int?
+  wikipedia                      String?                          @db.VarChar(255)
+  formula_one_driverchampionship formula_one_driverchampionship[]
+  formula_one_circuit            formula_one_circuit?             @relation(fields: [circuit_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_season             formula_one_season?              @relation(fields: [season_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_roundentry         formula_one_roundentry[]
+  formula_one_session            formula_one_session[]
+  formula_one_teamchampionship   formula_one_teamchampionship[]
+}
+
+model formula_one_roundentry {
+  id                       Int                        @id @default(autoincrement())
+  api_id                   String?                    @db.VarChar(255)
+  car_number               Int?
+  round_id                 Int?
+  team_driver_id           Int?
+  formula_one_round        formula_one_round?         @relation(fields: [round_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_teamdriver   formula_one_teamdriver?    @relation(fields: [team_driver_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_sessionentry formula_one_sessionentry[]
+}
+
+model formula_one_season {
+  id                                 Int                                  @id @default(autoincrement())
+  api_id                             String?                              @db.VarChar(255)
+  championship_system_id             Int?
+  wikipedia                          String?                              @db.VarChar(255)
+  year                               Int?
+  formula_one_championshipadjustment formula_one_championshipadjustment[]
+  formula_one_driverchampionship     formula_one_driverchampionship[]
+  formula_one_round                  formula_one_round[]
+  formula_one_championshipsystem     formula_one_championshipsystem?      @relation(fields: [championship_system_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_teamchampionship       formula_one_teamchampionship[]
+  formula_one_teamdriver             formula_one_teamdriver[]
+}
+
+model formula_one_session {
+  id                             Int                              @id @default(autoincrement())
+  api_id                         String?                          @db.VarChar(255)
+  has_time_data                  Boolean?
+  is_cancelled                   Boolean?
+  number                         Int?
+  point_system_id                Int?
+  round_id                       Int?
+  scheduled_laps                 Int?
+  timestamp                      DateTime?                        @db.Timestamptz(6)
+  timezone                       String?                          @db.VarChar(50)
+  type                           String?                          @db.VarChar(10)
+  formula_one_driverchampionship formula_one_driverchampionship[]
+  formula_one_pointsystem        formula_one_pointsystem?         @relation(fields: [point_system_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_round              formula_one_round?               @relation(fields: [round_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_sessionentry       formula_one_sessionentry[]
+  formula_one_teamchampionship   formula_one_teamchampionship[]
+}
+
+model formula_one_sessionentry {
+  id                     Int                     @id @default(autoincrement())
+  api_id                 String?                 @db.VarChar(255)
+  detail                 String?                 @db.VarChar(255)
+  fastest_lap_rank       Int?
+  grid                   Int?
+  is_classified          Boolean?
+  is_eligible_for_points Boolean?
+  laps_completed         Int?
+  points                 Float?
+  position               Int?
+  round_entry_id         Int?
+  session_id             Int?
+  status                 Int?
+  time                   String?                 @db.VarChar(255)
+  formula_one_lap        formula_one_lap[]
+  formula_one_pitstop    formula_one_pitstop[]
+  formula_one_roundentry formula_one_roundentry? @relation(fields: [round_entry_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_session    formula_one_session?    @relation(fields: [session_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model formula_one_team {
+  id                                 Int                                  @id @default(autoincrement())
+  api_id                             String?                              @db.VarChar(255)
+  base_team_id                       Int?
+  country_code                       String?                              @db.VarChar(3)
+  name                               String?                              @db.VarChar(255)
+  nationality                        String?                              @db.VarChar(255)
+  reference                          String?                              @db.VarChar(255)
+  wikipedia                          String?                              @db.VarChar(255)
+  formula_one_championshipadjustment formula_one_championshipadjustment[]
+  formula_one_baseteam               formula_one_baseteam?                @relation(fields: [base_team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_teamchampionship       formula_one_teamchampionship[]
+  formula_one_teamdriver             formula_one_teamdriver[]
+}
+
+model formula_one_teamchampionship {
+  id                  Int                  @id @default(autoincrement())
+  adjustment_type     Int?
+  highest_finish      Int?
+  is_eligible         Boolean?
+  points              Float?
+  position            Int?
+  round_id            Int?
+  round_number        Int?
+  season_id           Int?
+  session_id          Int?
+  session_number      Int?
+  team_id             Int?
+  win_count           Int?
+  year                Int?
+  formula_one_round   formula_one_round?   @relation(fields: [round_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_season  formula_one_season?  @relation(fields: [season_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_session formula_one_session? @relation(fields: [session_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_team    formula_one_team?    @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model formula_one_teamdriver {
+  id                     Int                      @id @default(autoincrement())
+  api_id                 String?                  @db.VarChar(255)
+  driver_id              Int?
+  role                   String?                  @db.VarChar(50)
+  season_id              Int?
+  team_id                Int?
+  formula_one_roundentry formula_one_roundentry[]
+  formula_one_driver     formula_one_driver?      @relation(fields: [driver_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_season     formula_one_season?      @relation(fields: [season_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  formula_one_team       formula_one_team?        @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}

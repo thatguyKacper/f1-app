@@ -1,0 +1,1 @@
+A client application built with the Next.js framework (App Router). It is responsible for serving the user interface and visualizing Formula 1 data. It utilizes Server-Side Rendering (SSR) for optimal performance and SEO. The application is containerized and optimized to run in standalone mode.
