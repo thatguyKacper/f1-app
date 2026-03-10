@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { F1Service } from './f1.service.js';
 
 @Controller()
@@ -20,5 +20,23 @@ export class F1Controller {
       count: Array.isArray(data) ? data.length : 0,
       data: data,
     };
+  }
+
+  @Get('season/:year')
+  async getSeasonRaces(@Param('year', ParseIntPipe) year: number) {
+    try {
+      const data = await this.f1Service.getSeasonRaces(year);
+      return {
+        status: 'success',
+        data: data,
+      };
+    } catch (error) {
+      console.error('Error fetching season races:', error);
+      return {
+        status: 'error',
+        message: 'Failed to fetch season races',
+        details: error instanceof Error ? error.message : String(error),
+      };
+    }
   }
 }
