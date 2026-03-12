@@ -45,12 +45,18 @@ export default async function DriverPage({
               key={td.id}
               className="flex justify-between p-3 bg-slate-50 rounded-lg"
             >
-              <span className="font-semibold text-slate-700">
+              <Link
+                href={`/team/${td.formula_one_team.id}`}
+                className="text-slate-700 font-semibold hover:text-red-600 transition-colors cursor-pointer"
+              >
                 {td.formula_one_team.name}
-              </span>
-              <span className="text-slate-500 font-bold">
+              </Link>
+              <Link
+                href={`/${td.formula_one_season.year}`}
+                className="text-slate-500 font-bold hover:text-red-600 transition-colors cursor-pointer"
+              >
                 {td.formula_one_season.year} Season
-              </span>
+              </Link>
             </li>
           ))}
           {driver.formula_one_teamdriver.length === 0 && (

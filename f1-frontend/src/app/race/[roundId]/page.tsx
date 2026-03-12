@@ -50,7 +50,7 @@ export default async function RacePage({
                 <th className="px-6 py-4">Pos</th>
                 <th className="px-6 py-4">No</th>
                 <th className="px-6 py-4">Driver</th>
-                <th className="px-6 py-4">Car</th>
+                <th className="px-6 py-4">Team</th>
                 <th className="px-6 py-4">Laps</th>
                 <th className="px-6 py-4">Time/Retired</th>
                 <th className="px-6 py-4 text-right">PTS</th>

@@ -48,7 +48,7 @@ export default async function DriverStandingsPage({
                 <th className="px-6 py-4">Pos</th>
                 <th className="px-6 py-4">Driver</th>
                 <th className="px-6 py-4">Nationality</th>
-                <th className="px-6 py-4">Car</th>
+                <th className="px-6 py-4">Team</th>
                 <th className="px-6 py-4 text-center">Wins</th>
                 <th className="px-6 py-4 text-right">PTS</th>
               </tr>
@@ -74,7 +74,12 @@ export default async function DriverStandingsPage({
                     {driver.nationality}
                   </td>
                   <td className="px-6 py-4 text-slate-600 text-xs font-bold uppercase tracking-wider">
-                    {driver.teamName}
+                    <Link
+                      href={`/team/${driver.teamId}`}
+                      className="hover:text-red-600 transition-colors cursor-pointer"
+                    >
+                      {driver.teamName}
+                    </Link>
                   </td>
                   <td className="px-6 py-4 text-center font-medium text-slate-600">
                     {driver.wins}

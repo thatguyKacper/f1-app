@@ -47,6 +47,8 @@ export default async function TeamStandingsPage({
               <tr>
                 <th className="px-6 py-4">Pos</th>
                 <th className="px-6 py-4">Team</th>
+                <th className="px-6 py-4">Nationality</th>
+                <th className="px-6 py-4">Drivers</th>
                 <th className="px-6 py-4 text-center">Wins</th>
                 <th className="px-6 py-4 text-right">PTS</th>
               </tr>
@@ -60,13 +62,43 @@ export default async function TeamStandingsPage({
                   <td className="px-6 py-4 font-black text-slate-900 text-lg">
                     {team.position}
                   </td>
-                  <td className="px-6 py-4 font-bold text-slate-900 uppercase tracking-wide">
+                  <td className="px-6 py-4 font-bold text-slate-900 tracking-wide">
                     <Link
                       href={`/team/${team.teamId}`}
                       className="hover:text-red-600 transition-colors cursor-pointer"
                     >
                       {team.teamName}
                     </Link>
+                  </td>
+                  <td className="px-6 py-4 text-slate-500">
+                    {team.nationality}
+                  </td>
+                  <td className="px-6 py-4 text-slate-500">
+                    {team.drivers ? (
+                      <div className="flex flex-wrap gap-1">
+                        {team.drivers
+                          .split(",")
+                          .map((driverStr, index, array) => {
+                            const [id, name] = driverStr.split("|");
+
+                            return (
+                              <span key={id}>
+                                <Link
+                                  href={`/driver/${id}`}
+                                  className="font-medium hover:text-red-600 transition-colors"
+                                >
+                                  {name}
+                                </Link>
+                                {index < array.length - 1 && (
+                                  <span className="mr-1">,</span>
+                                )}
+                              </span>
+                            );
+                          })}
+                      </div>
+                    ) : (
+                      <span className="text-slate-300 italic">No drivers</span>
+                    )}
                   </td>
                   <td className="px-6 py-4 text-center font-medium text-slate-600">
                     {team.wins}

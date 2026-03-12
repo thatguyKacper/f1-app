@@ -15,9 +15,11 @@ export interface DriverStanding {
 export interface TeamStanding {
   teamId: number;
   position: number;
+  nationality: string;
   teamName: string;
   points: number;
   wins: number;
+  drivers: string;
 }
 
 @Injectable()
@@ -34,7 +36,8 @@ export class StandingsService {
             d.nationality,
             dc.points,
             dc.win_count AS "wins",
-            STRING_AGG(DISTINCT t.name, ', ') AS "teamName"
+            t.id AS "teamId",
+            t.name AS "teamName"
         FROM formula_one_driverchampionship dc
         JOIN formula_one_driver d ON dc.driver_id = d.id
         LEFT JOIN formula_one_teamdriver td ON td.driver_id = d.id AND td.season_id = dc.season_id
@@ -45,7 +48,7 @@ export class StandingsService {
               FROM formula_one_driverchampionship
               WHERE year = ${year}
           )
-        GROUP BY d.id, dc.position, d.forename, d.surname, d.nationality, dc.points, dc.win_count
+        GROUP BY d.id, dc.position, d.forename, d.surname, d.nationality, dc.points, dc.win_count, t.id
         ORDER BY dc.position ASC;
       `,
     );
@@ -55,20 +58,25 @@ export class StandingsService {
     return this.prisma.$queryRaw<TeamStanding[]>(
       Prisma.sql`
         SELECT
-            t.id as "teamId",
-            tc.position,
-            t.name AS "teamName",
-            tc.points,
-            tc.win_count AS "wins"
-        FROM formula_one_teamchampionship tc
-        JOIN formula_one_team t ON tc.team_id = t.id
-        WHERE tc.year = ${year}
-          AND tc.round_number = (
-              SELECT MAX(round_number)
-              FROM formula_one_teamchampionship
-              WHERE year = ${year}
-          )
-        ORDER BY tc.position ASC;
+          t.id AS "teamId",
+          tc.position,
+          t.name AS "teamName",
+          t.nationality,
+          tc.points,
+          tc.win_count AS "wins",
+          STRING_AGG(DISTINCT d.id::text || '|' || d.forename || ' ' || d.surname, ',') AS "drivers"
+      FROM formula_one_teamchampionship tc
+      JOIN formula_one_team t ON tc.team_id = t.id
+      LEFT JOIN formula_one_teamdriver td ON td.team_id = t.id AND td.season_id = tc.season_id
+      LEFT JOIN formula_one_driver d ON td.driver_id = d.id
+      WHERE tc.year = ${year}
+        AND tc.round_number = (
+            SELECT MAX(round_number)
+            FROM formula_one_teamchampionship
+            WHERE year = ${year}
+        )
+      GROUP BY t.id, tc.position, t.name, t.nationality, tc.points, tc.win_count
+      ORDER BY tc.position ASC;
       `,
     );
   }

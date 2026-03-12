@@ -7,6 +7,7 @@ import { RacesModule } from './races/races.module.js';
 import { DriversModule } from './drivers/drivers.module.js';
 import { CircuitsModule } from './circuits/circuits.module.js';
 import { TeamsModule } from './teams/teams.module.js';
+import { StatsModule } from './stats/stats.module.js';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { TeamsModule } from './teams/teams.module.js';
     DriversModule,
     CircuitsModule,
     TeamsModule,
+    StatsModule,
   ],
 })
 export class AppModule {}

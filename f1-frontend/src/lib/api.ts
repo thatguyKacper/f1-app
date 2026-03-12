@@ -102,3 +102,10 @@ export async function getTeamDetails(teamId: string) {
   const json = await res.json()
   return json.data
 }
+
+export async function getStats() {
+  const res = await fetch(`${API_URL}/stats`, { next: { revalidate: 3600 } })
+  if (!res.ok) throw new Error('Failed to fetch fun stats')
+  const json = await res.json()
+  return json.data
+}

@@ -1,5 +1,6 @@
 import { getSeasonRaces } from "@/lib/api";
 import Link from "next/link";
+import { notFound } from "next/navigation"; // <-- Dodaj ten import
 
 export default async function SeasonPage({
   params,
@@ -8,6 +9,10 @@ export default async function SeasonPage({
 }) {
   const resolvedParams = await params;
   const year = resolvedParams.year;
+
+  if (!/^\d{4}$/.test(year)) {
+    notFound();
+  }
 
   const { races } = await getSeasonRaces(year);
 
@@ -74,8 +79,7 @@ export default async function SeasonPage({
                     <td className="px-6 py-4 text-slate-600 font-medium">
                       {date}
                     </td>
-                    <td className="px-6 py-4 font-bold text-slate-900 flex items-center gap-2">
-                      <span className="text-lg">🏁</span>
+                    <td className="px-6 py-4 font-bold text-slate-900 gap-2">
                       {race.raceName}
                     </td>
                     <td className="px-6 py-4 text-slate-500">

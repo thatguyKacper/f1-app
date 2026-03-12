@@ -26,13 +26,17 @@ export interface DriverStanding {
   nationality: string | null
   points: number
   wins: number
+  teamId: number
   teamName: string | null
 }
 
 export interface TeamStanding {
   teamId: number
   position: number
+  nationality: string
   teamName: string
+  driverId: number
+  drivers: string
   points: number
   wins: number
 }
@@ -56,4 +60,21 @@ export interface RoundDetails {
   date: string
   circuitName: string
   country: string
+}
+
+export interface FastestPitStop {
+  duration: string
+  driverName: string
+  teamName: string
+  year: number
+}
+
+export interface DriverStatCount {
+  driverName: string
+  count: number
+}
+
+export interface TeamStatCount {
+  teamName: string
+  count: number
 }

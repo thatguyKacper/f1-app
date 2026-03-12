@@ -42,24 +42,27 @@ export default async function TeamPage({
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {team.formula_one_teamdriver?.map((td: any) => (
-            <Link
-              href={`/driver/${td.formula_one_driver.id}`}
+            <div
               key={td.id}
-              className="flex justify-between items-center p-4 bg-slate-50 rounded-lg hover:bg-red-50 hover:border-red-100 border border-transparent transition-all group"
+              className="flex justify-between items-center p-4 bg-slate-50 rounded-lg hover:bg-red-50 hover:border-red-100 border border-transparent transition-all"
             >
               <div>
-                <span className="font-bold text-slate-800 block group-hover:text-red-700 transition-colors">
-                  {td.formula_one_driver.forename}{" "}
-                  {td.formula_one_driver.surname}
-                </span>
+                <Link href={`/driver/${td.formula_one_driver.id}`}>
+                  <span className="font-bold text-slate-800 block hover:text-red-700 transition-colors">
+                    {td.formula_one_driver.forename}{" "}
+                    {td.formula_one_driver.surname}
+                  </span>
+                </Link>
                 <span className="text-xs text-slate-500">
                   {td.formula_one_driver.nationality}
                 </span>
               </div>
-              <span className="text-slate-400 font-black text-xl opacity-50 group-hover:opacity-100 group-hover:text-red-300 transition-opacity">
-                {td.formula_one_season.year}
-              </span>
-            </Link>
+              <Link href={`/${td.formula_one_season.year}`}>
+                <span className="font-bold text-slate-800 block hover:text-red-700 transition-colors">
+                  {td.formula_one_season.year}
+                </span>
+              </Link>
+            </div>
           ))}
 
           {(!team.formula_one_teamdriver ||
