@@ -78,3 +78,63 @@ export interface TeamStatCount {
   teamName: string
   count: number
 }
+
+export interface CircuitProfile {
+  id: number
+  name: string
+  locality: string | null
+  country: string | null
+  lapRecord: { time: string; driverName: string; year: number } | null
+  racesHeldCount: number
+  recentRaces: { id: number; name: string; year: number }[]
+}
+
+export interface DriverTeamHistory {
+  teamId: number
+  teamName: string
+  year: number
+}
+
+export interface RaceResultDetail {
+  year: number
+  raceName: string
+  circuitName: string
+  position: number
+}
+
+export interface DriverProfile {
+  id: number
+  forename: string
+  surname: string
+  nationality: string | null
+  wikipedia: string | null
+  carNumber: number | null
+  careerWins: number
+  careerPodiums: number
+  championships: number
+  careerPoints: number
+  raceWinsList: RaceResultDetail[]
+  podiumsList: RaceResultDetail[]
+  seasonHistory: {
+    year: number
+    teamId: number
+    teamName: string
+    points: number
+  }[]
+}
+
+export interface TeamProfile {
+  id: number
+  name: string
+  nationality: string | null
+  wikipedia: string | null
+  championships: number
+  raceWins: number
+  totalPoints: number
+  driversHistory: {
+    driverId: number
+    driverName: string
+    years: string
+    points: number
+  }[]
+}

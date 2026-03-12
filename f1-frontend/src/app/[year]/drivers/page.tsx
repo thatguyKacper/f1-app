@@ -54,11 +54,8 @@ export default async function DriverStandingsPage({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {standings.map((driver) => (
-                <tr
-                  key={driver.driverName}
-                  className="hover:bg-slate-50 transition-colors"
-                >
+              {standings.map((driver, idx) => (
+                <tr key={idx} className="hover:bg-slate-50 transition-colors">
                   <td className="px-6 py-4 font-black text-slate-900 text-lg">
                     {driver.position}
                   </td>

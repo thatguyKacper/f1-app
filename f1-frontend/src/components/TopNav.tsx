@@ -71,7 +71,7 @@ export default function TopNav({ seasons }: { seasons: number[] }) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-slate-800 border-b border-slate-700 overflow-x-auto custom-scrollbar">
         <div className="px-4 sm:px-6 lg:px-8">
-          <ul className="flex space-x-6 py-2">
+          <ul className="flex space-x-6 py-4">
             <li className="text-xs font-bold text-slate-400 uppercase tracking-widest self-center mr-2">
               Seasons
             </li>

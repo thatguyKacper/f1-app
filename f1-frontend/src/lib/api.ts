@@ -6,6 +6,9 @@ import {
   TeamStanding,
   RoundDetails,
   RaceResult,
+  DriverProfile,
+  CircuitProfile,
+  TeamProfile,
 } from '../types/f1'
 
 const API_URL = process.env.BASE_URL || 'http://localhost:3001'
@@ -78,7 +81,9 @@ export async function getRaceResults(
   return json.data
 }
 
-export async function getDriverDetails(driverId: string) {
+export async function getDriverDetails(
+  driverId: string,
+): Promise<DriverProfile> {
   const res = await fetch(`${API_URL}/drivers/${driverId}`, {
     next: { revalidate: 3600 },
   })
@@ -86,7 +91,9 @@ export async function getDriverDetails(driverId: string) {
   return (await res.json()).data
 }
 
-export async function getCircuitDetails(circuitId: string) {
+export async function getCircuitDetails(
+  circuitId: string,
+): Promise<CircuitProfile> {
   const res = await fetch(`${API_URL}/circuits/${circuitId}`, {
     next: { revalidate: 3600 },
   })
@@ -94,7 +101,7 @@ export async function getCircuitDetails(circuitId: string) {
   return (await res.json()).data
 }
 
-export async function getTeamDetails(teamId: string) {
+export async function getTeamDetails(teamId: string): Promise<TeamProfile> {
   const res = await fetch(`${API_URL}/teams/${teamId}`, {
     next: { revalidate: 3600 },
   })
