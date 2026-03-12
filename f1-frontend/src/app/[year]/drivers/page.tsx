@@ -63,7 +63,12 @@ export default async function DriverStandingsPage({
                     {driver.position}
                   </td>
                   <td className="px-6 py-4 font-bold text-slate-900">
-                    {driver.driverName}
+                    <Link
+                      href={`/driver/${driver.driverId}`}
+                      className="hover:text-red-600 transition-colors cursor-pointer"
+                    >
+                      {driver.driverName}
+                    </Link>
                   </td>
                   <td className="px-6 py-4 text-slate-500">
                     {driver.nationality}

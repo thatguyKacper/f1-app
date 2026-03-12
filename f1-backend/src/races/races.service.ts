@@ -13,6 +13,7 @@ export interface RoundDetails {
 export interface RaceResult {
   position: number | null;
   carNumber: number | null;
+  driverId: number;
   driverName: string;
   teamName: string;
   laps: number;
@@ -53,7 +54,9 @@ export class RacesService {
         SELECT
             se.position,
             re.car_number AS "carNumber",
+            d.id AS "driverId",
             d.forename || ' ' || d.surname AS "driverName",
+            t.id AS "teamId",
             t.name AS "teamName",
             se.laps_completed AS "laps",
             se.time AS "time",
@@ -66,9 +69,8 @@ export class RacesService {
         JOIN formula_one_driver d ON td.driver_id = d.id
         JOIN formula_one_team t ON td.team_id = t.id
         WHERE sess.round_id = ${roundId}
-          AND sess.type = 'R' -- Zapewnia, że bierzemy tylko wyścig (omijamy kwalifikacje, treningi)
+          AND sess.type = 'R'
         ORDER BY
-          -- Sortujemy po pozycji (ale omijamy NULL dla tych, co nie ukończyli, dając ich na koniec)
           CASE WHEN se.position IS NULL THEN 1 ELSE 0 END,
           se.position ASC;
       `,

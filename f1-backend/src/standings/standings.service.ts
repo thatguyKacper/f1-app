@@ -3,6 +3,7 @@ import { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 export interface DriverStanding {
+  driverId: number;
   position: number;
   driverName: string;
   nationality: string | null;
@@ -12,6 +13,7 @@ export interface DriverStanding {
 }
 
 export interface TeamStanding {
+  teamId: number;
   position: number;
   teamName: string;
   points: number;
@@ -26,26 +28,24 @@ export class StandingsService {
     return this.prisma.$queryRaw<DriverStanding[]>(
       Prisma.sql`
         SELECT
+            d.id AS "driverId",
             dc.position,
             d.forename || ' ' || d.surname AS "driverName",
             d.nationality,
             dc.points,
             dc.win_count AS "wins",
-            -- Łączymy nazwy zespołów po przecinku, jeśli kierowca jeździł dla kilku w jednym sezonie
             STRING_AGG(DISTINCT t.name, ', ') AS "teamName"
         FROM formula_one_driverchampionship dc
         JOIN formula_one_driver d ON dc.driver_id = d.id
-        LEFT JOIN formula_one_season s ON s.year = dc.year
-        LEFT JOIN formula_one_teamdriver td ON td.driver_id = d.id AND td.season_id = s.id
+        LEFT JOIN formula_one_teamdriver td ON td.driver_id = d.id AND td.season_id = dc.season_id
         LEFT JOIN formula_one_team t ON td.team_id = t.id
         WHERE dc.year = ${year}
-          -- Kluczowe: pobieramy tylko wyniki po ostatnim odbytym wyścigu w danym roku
           AND dc.round_number = (
               SELECT MAX(round_number)
               FROM formula_one_driverchampionship
               WHERE year = ${year}
           )
-        GROUP BY dc.position, d.forename, d.surname, d.nationality, dc.points, dc.win_count
+        GROUP BY d.id, dc.position, d.forename, d.surname, d.nationality, dc.points, dc.win_count
         ORDER BY dc.position ASC;
       `,
     );
@@ -55,6 +55,7 @@ export class StandingsService {
     return this.prisma.$queryRaw<TeamStanding[]>(
       Prisma.sql`
         SELECT
+            t.id as "teamId",
             tc.position,
             t.name AS "teamName",
             tc.points,
@@ -62,7 +63,6 @@ export class StandingsService {
         FROM formula_one_teamchampionship tc
         JOIN formula_one_team t ON tc.team_id = t.id
         WHERE tc.year = ${year}
-          -- Pobieramy tylko wyniki po ostatnim odbytym wyścigu w danym roku
           AND tc.round_number = (
               SELECT MAX(round_number)
               FROM formula_one_teamchampionship

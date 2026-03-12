@@ -33,9 +33,12 @@ export class SeasonsService {
             r.number AS "roundNumber",
             r.name AS "raceName",
             r.date AS "raceDate",
+            c.id AS "circuitId",
             c.name AS "circuitName",
             c.country AS "country",
+            d.id AS "driverId",
             d.forename || ' ' || d.surname AS "winnerName",
+            t.id AS "teamId",
             t.name AS "teamName"
         FROM formula_one_season s
         JOIN formula_one_round r ON r.season_id = s.id

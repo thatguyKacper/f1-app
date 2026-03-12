@@ -70,10 +70,20 @@ export default async function RacePage({
                       {result.carNumber || "-"}
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-900">
-                      {result.driverName}
+                      <Link
+                        href={`/driver/${result.driverId}`}
+                        className="hover:text-red-600 transition-colors cursor-pointer"
+                      >
+                        {result.driverName}
+                      </Link>
                     </td>
                     <td className="px-6 py-4 text-slate-600 text-xs font-bold uppercase tracking-wider">
-                      {result.teamName}
+                      <Link
+                        href={`/team/${result.teamId}`}
+                        className="hover:text-red-600 transition-colors cursor-pointer"
+                      >
+                        {result.teamName}
+                      </Link>
                     </td>
                     <td className="px-6 py-4 text-slate-500">{result.laps}</td>
                     <td className="px-6 py-4 text-slate-600 font-mono text-xs">

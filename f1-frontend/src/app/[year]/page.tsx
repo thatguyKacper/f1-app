@@ -18,7 +18,7 @@ export default async function SeasonPage({
           {year} <span className="text-red-600 font-light">Season</span>
         </h2>
 
-        <div className="flex gap-2 mt-6">
+        <div className="flex flex-wrap gap-2 mt-6">
           <Link
             href={`/${year}`}
             className="px-5 py-2 text-sm font-bold bg-slate-900 text-white rounded-md shadow-sm"
@@ -75,21 +75,36 @@ export default async function SeasonPage({
                       {date}
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-900 flex items-center gap-2">
-                      {/* Flaga w formie emoji jako mały bajer */}
                       <span className="text-lg">🏁</span>
                       {race.raceName}
                     </td>
                     <td className="px-6 py-4 text-slate-500">
-                      {race.circuitName}, {race.country}
+                      <Link
+                        href={`/circuit/${race.circuitId}`}
+                        className="hover:text-red-600 transition-colors cursor-pointer"
+                      >
+                        {race.circuitName}
+                      </Link>
+                      , {race.country}
                     </td>
                     <td className="px-6 py-4">
                       {race.winnerName ? (
                         <div>
                           <span className="font-bold text-slate-900 block">
-                            {race.winnerName}
+                            <Link
+                              href={`/driver/${race.driverId}`}
+                              className="hover:text-red-600 transition-colors cursor-pointer"
+                            >
+                              {race.winnerName}
+                            </Link>
                           </span>
                           <span className="text-xs text-slate-500">
-                            {race.teamName}
+                            <Link
+                              href={`/team/${race.teamId}`}
+                              className="hover:text-red-600 transition-colors cursor-pointer"
+                            >
+                              {race.teamName}
+                            </Link>
                           </span>
                         </div>
                       ) : (

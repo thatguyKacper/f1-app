@@ -61,7 +61,12 @@ export default async function TeamStandingsPage({
                     {team.position}
                   </td>
                   <td className="px-6 py-4 font-bold text-slate-900 uppercase tracking-wide">
-                    {team.teamName}
+                    <Link
+                      href={`/team/${team.teamId}`}
+                      className="hover:text-red-600 transition-colors cursor-pointer"
+                    >
+                      {team.teamName}
+                    </Link>
                   </td>
                   <td className="px-6 py-4 text-center font-medium text-slate-600">
                     {team.wins}

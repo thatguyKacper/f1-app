@@ -77,3 +77,28 @@ export async function getRaceResults(
     await res.json()
   return json.data
 }
+
+export async function getDriverDetails(driverId: string) {
+  const res = await fetch(`${API_URL}/drivers/${driverId}`, {
+    next: { revalidate: 3600 },
+  })
+  if (!res.ok) throw new Error('Failed to fetch driver')
+  return (await res.json()).data
+}
+
+export async function getCircuitDetails(circuitId: string) {
+  const res = await fetch(`${API_URL}/circuits/${circuitId}`, {
+    next: { revalidate: 3600 },
+  })
+  if (!res.ok) throw new Error('Failed to fetch circuit')
+  return (await res.json()).data
+}
+
+export async function getTeamDetails(teamId: string) {
+  const res = await fetch(`${API_URL}/teams/${teamId}`, {
+    next: { revalidate: 3600 },
+  })
+  if (!res.ok) throw new Error(`Failed to fetch team details for ID ${teamId}`)
+  const json = await res.json()
+  return json.data
+}
