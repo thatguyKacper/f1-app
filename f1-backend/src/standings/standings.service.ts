@@ -29,7 +29,7 @@ export class StandingsService {
   async getDriverStandings(year: number): Promise<DriverStanding[]> {
     return this.prisma.$queryRaw<DriverStanding[]>(
       Prisma.sql`
-        SELECT
+        SELECT DISTINCT ON (dc.position, d.id)
             d.id AS "driverId",
             dc.position,
             d.forename || ' ' || d.surname AS "driverName",
@@ -48,8 +48,7 @@ export class StandingsService {
               FROM formula_one_driverchampionship
               WHERE year = ${year}
           )
-        GROUP BY d.id, dc.position, d.forename, d.surname, d.nationality, dc.points, dc.win_count, t.id
-        ORDER BY dc.position ASC;
+        ORDER BY dc.position ASC, d.id ASC, t.id DESC;
       `,
     );
   }

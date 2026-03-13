@@ -13,7 +13,17 @@ export interface RaceResultDetail {
   year: number;
   raceName: string;
   circuitName: string;
-  position: number;
+  teamId: number;
+  teamName: string;
+  position: number | null;
+  status: string | null;
+}
+
+export interface PaginatedRaceResults {
+  results: RaceResultDetail[];
+  total: number;
+  page: number;
+  totalPages: number;
 }
 
 export interface DriverProfile {
@@ -27,6 +37,7 @@ export interface DriverProfile {
   careerPoints: number;
   raceWinsList: RaceResultDetail[];
   podiumsList: RaceResultDetail[];
+  allResults: PaginatedRaceResults;
   seasonHistory: DriverSeasonHistory[];
 }
 
@@ -48,14 +59,23 @@ interface RawRaceResult {
   year: number;
   raceName: string;
   circuitName: string;
-  position: number | string;
+  teamId: number;
+  teamName: string;
+  position: number | string | null;
+  detail: string | null;
 }
 
 @Injectable()
 export class DriversService {
   constructor(private prisma: PrismaService) {}
 
-  async getDriverById(id: number): Promise<DriverProfile> {
+  async getDriverById(
+    id: number,
+    page: number = 1,
+    limit: number = 10,
+    sort?: string,
+    order?: string,
+  ): Promise<DriverProfile> {
     const driver = await this.prisma.formula_one_driver.findUnique({
       where: { id },
     });
@@ -95,7 +115,10 @@ export class DriversService {
         s.year AS "year",
         r.name AS "raceName",
         c.name AS "circuitName",
-        se.position AS "position"
+        t.id AS "teamId",
+        t.name AS "teamName",
+        se.position AS "position",
+        se.detail AS "detail"
       FROM formula_one_sessionentry se
       JOIN formula_one_session sess ON se.session_id = sess.id
       JOIN formula_one_round r ON sess.round_id = r.id
@@ -103,19 +126,82 @@ export class DriversService {
       JOIN formula_one_circuit c ON r.circuit_id = c.id
       JOIN formula_one_roundentry re ON se.round_entry_id = re.id
       JOIN formula_one_teamdriver td ON re.team_driver_id = td.id
+      JOIN formula_one_team t ON td.team_id = t.id
       WHERE td.driver_id = ${id} AND sess.type = 'R' AND se.position <= 3
-      ORDER BY s.year DESC
+      ORDER BY s.year DESC, r.number DESC
     `);
 
-    // Mapujemy wyniki z bazy
     const podiumsList: RaceResultDetail[] = podiumsDetailsResult.map((p) => ({
       year: Number(p.year),
       raceName: p.raceName,
       circuitName: p.circuitName,
-      position: Number(p.position),
+      teamId: Number(p.teamId),
+      teamName: p.teamName,
+      position: p.position ? Number(p.position) : null,
+      status: p.detail,
     }));
 
     const raceWinsList = podiumsList.filter((p) => p.position === 1);
+
+    let orderSql = Prisma.sql`ORDER BY s.year DESC, r.number DESC`; // Domyślne (Najnowsze wyścigi)
+
+    if (sort === 'position') {
+      if (order === 'asc') {
+        orderSql = Prisma.sql`ORDER BY se.position ASC NULLS LAST, s.year DESC, r.number DESC`;
+      } else if (order === 'desc') {
+        orderSql = Prisma.sql`ORDER BY se.position DESC NULLS LAST, s.year DESC, r.number DESC`;
+      }
+    }
+
+    const countResult = await this.prisma.$queryRaw<
+      { count: bigint }[]
+    >(Prisma.sql`
+          SELECT COUNT(*) as count
+          FROM formula_one_sessionentry se
+          JOIN formula_one_roundentry re ON se.round_entry_id = re.id
+          JOIN formula_one_teamdriver td ON re.team_driver_id = td.id
+          JOIN formula_one_session sess ON se.session_id = sess.id
+          WHERE td.driver_id = ${id} AND sess.type = 'R'
+        `);
+
+    const total = Number(countResult[0]?.count || 0);
+    const totalPages = Math.ceil(total / limit);
+    const safePage = Math.max(1, Math.min(page, totalPages || 1));
+    const offset = (safePage - 1) * limit;
+
+    const allResultsRaw = await this.prisma.$queryRaw<
+      RawRaceResult[]
+    >(Prisma.sql`
+          SELECT
+            s.year AS "year",
+            r.name AS "raceName",
+            c.name AS "circuitName",
+            t.id AS "teamId",
+            t.name AS "teamName",
+            se.position AS "position",
+            se.detail AS "detail"
+          FROM formula_one_sessionentry se
+          JOIN formula_one_session sess ON se.session_id = sess.id
+          JOIN formula_one_round r ON sess.round_id = r.id
+          JOIN formula_one_season s ON r.season_id = s.id
+          JOIN formula_one_circuit c ON r.circuit_id = c.id
+          JOIN formula_one_roundentry re ON se.round_entry_id = re.id
+          JOIN formula_one_teamdriver td ON re.team_driver_id = td.id
+          JOIN formula_one_team t ON td.team_id = t.id
+          WHERE td.driver_id = ${id} AND sess.type = 'R'
+          ${orderSql}
+          LIMIT ${limit} OFFSET ${offset}
+        `);
+
+    const paginatedResults: RaceResultDetail[] = allResultsRaw.map((p) => ({
+      year: Number(p.year),
+      raceName: p.raceName,
+      circuitName: p.circuitName,
+      teamId: Number(p.teamId),
+      teamName: p.teamName,
+      position: p.position ? Number(p.position) : null,
+      status: p.detail,
+    }));
 
     const seasonHistoryResult = await this.prisma.$queryRaw<
       RawSeasonHistory[]
@@ -161,6 +247,12 @@ export class DriversService {
         : 0,
       raceWinsList,
       podiumsList,
+      allResults: {
+        results: paginatedResults,
+        total,
+        page: safePage,
+        totalPages,
+      },
       seasonHistory,
     };
   }

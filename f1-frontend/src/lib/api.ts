@@ -83,31 +83,60 @@ export async function getRaceResults(
 
 export async function getDriverDetails(
   driverId: string,
+  page: number = 1,
+  sort?: string,
+  order?: string,
 ): Promise<DriverProfile> {
-  const res = await fetch(`${API_URL}/drivers/${driverId}`, {
-    next: { revalidate: 3600 },
-  })
-  if (!res.ok) throw new Error('Failed to fetch driver')
-  return (await res.json()).data
+  const params = new URLSearchParams()
+  params.append('page', page.toString())
+  if (sort) params.append('sort', sort)
+  if (order) params.append('order', order)
+
+  const res = await fetch(
+    `${API_URL}/drivers/${driverId}?${params.toString()}`,
+    {
+      next: { revalidate: 3600 },
+    },
+  )
+
+  if (!res.ok) throw new Error('Failed to fetch driver details')
+  const json: ApiResponse<DriverProfile> = await res.json()
+  return json.data
 }
 
 export async function getCircuitDetails(
   circuitId: string,
-): Promise<CircuitProfile> {
-  const res = await fetch(`${API_URL}/circuits/${circuitId}`, {
-    next: { revalidate: 3600 },
-  })
-  if (!res.ok) throw new Error('Failed to fetch circuit')
+  page: number = 1,
+  sort?: string,
+  order?: string,
+): Promise<any> {
+  const params = new URLSearchParams()
+  params.append('page', page.toString())
+  if (sort) params.append('sort', sort)
+  if (order) params.append('order', order)
+  const res = await fetch(
+    `${API_URL}/circuits/${circuitId}?${params.toString()}`,
+    { next: { revalidate: 3600 } },
+  )
+  if (!res.ok) throw new Error('Failed to fetch circuit details')
   return (await res.json()).data
 }
 
-export async function getTeamDetails(teamId: string): Promise<TeamProfile> {
-  const res = await fetch(`${API_URL}/teams/${teamId}`, {
+export async function getTeamDetails(
+  teamId: string,
+  page: number = 1,
+  sort?: string,
+  order?: string,
+): Promise<any> {
+  const params = new URLSearchParams()
+  params.append('page', page.toString())
+  if (sort) params.append('sort', sort)
+  if (order) params.append('order', order)
+  const res = await fetch(`${API_URL}/teams/${teamId}?${params.toString()}`, {
     next: { revalidate: 3600 },
   })
-  if (!res.ok) throw new Error(`Failed to fetch team details for ID ${teamId}`)
-  const json = await res.json()
-  return json.data
+  if (!res.ok) throw new Error('Failed to fetch team details')
+  return (await res.json()).data
 }
 
 export async function getStats() {

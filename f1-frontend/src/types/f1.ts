@@ -54,6 +54,13 @@ export interface RaceResult {
   status: string | null
 }
 
+export interface PaginatedRaceResults {
+  results: RaceResultDetail[]
+  total: number
+  page: number
+  totalPages: number
+}
+
 export interface RoundDetails {
   roundId: number
   raceName: string
@@ -121,6 +128,7 @@ export interface DriverProfile {
     teamName: string
     points: number
   }[]
+  allResults: PaginatedRaceResults[]
 }
 
 export interface TeamProfile {

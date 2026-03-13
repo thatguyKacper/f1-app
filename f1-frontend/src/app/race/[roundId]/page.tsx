@@ -1,5 +1,13 @@
 import { getRoundDetails, getRaceResults } from "@/lib/api";
 import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default async function RacePage({
   params,
@@ -23,91 +31,86 @@ export default async function RacePage({
 
   return (
     <div className="space-y-6">
-      <div className="border-b border-gray-200 pb-6 relative">
+      <div className="border-b pb-6 relative">
         <Link
           href={`/${new Date(roundDetails.date).getFullYear()}`}
-          className="text-sm font-semibold text-slate-500 hover:text-red-600 transition-colors mb-4 inline-block"
+          className="text-sm font-semibold text-muted-foreground hover:text-red-600 transition-colors mb-4 inline-block"
         >
           &larr; Back to Season
         </Link>
         <div className="flex items-center gap-3 mb-2">
           <span className="text-4xl">🏁</span>
-          <h2 className="text-4xl font-black text-slate-900">
-            {roundDetails.raceName}
-          </h2>
+          <h2 className="text-4xl font-black">{roundDetails.raceName}</h2>
         </div>
-        <p className="text-lg text-slate-600 font-medium">
+        <p className="text-lg text-muted-foreground font-medium">
           {roundDetails.circuitName}, {roundDetails.country}
         </p>
-        <p className="text-sm text-slate-500 mt-1">{raceDate}</p>
+        <p className="text-sm text-muted-foreground mt-1">{raceDate}</p>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-slate-900 text-slate-300 uppercase font-semibold text-xs tracking-wider">
-              <tr>
-                <th className="px-6 py-4">Pos</th>
-                <th className="px-6 py-4">No</th>
-                <th className="px-6 py-4">Driver</th>
-                <th className="px-6 py-4">Team</th>
-                <th className="px-6 py-4">Laps</th>
-                <th className="px-6 py-4">Time/Retired</th>
-                <th className="px-6 py-4 text-right">PTS</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {results.length > 0 ? (
-                results.map((result, index) => (
-                  <tr
-                    key={index}
-                    className="hover:bg-slate-50 transition-colors"
-                  >
-                    <td className="px-6 py-4 font-black text-slate-900">
-                      {result.position || "-"}
-                    </td>
-                    <td className="px-6 py-4 text-slate-400 font-mono font-bold">
-                      {result.carNumber || "-"}
-                    </td>
-                    <td className="px-6 py-4 font-bold text-slate-900">
-                      <Link
-                        href={`/driver/${result.driverId}`}
-                        className="hover:text-red-600 transition-colors cursor-pointer"
-                      >
-                        {result.driverName}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4 text-slate-600 text-xs font-bold uppercase tracking-wider">
-                      <Link
-                        href={`/team/${result.teamId}`}
-                        className="hover:text-red-600 transition-colors cursor-pointer"
-                      >
-                        {result.teamName}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4 text-slate-500">{result.laps}</td>
-                    <td className="px-6 py-4 text-slate-600 font-mono text-xs">
-                      {result.time || result.status || "-"}
-                    </td>
-                    <td className="px-6 py-4 text-right font-black text-slate-900">
-                      {result.points}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="px-6 py-12 text-center text-slate-500"
-                  >
-                    <span className="text-2xl block mb-2">⏱️</span>
-                    No results available for this session yet.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+      <div className="bg-background rounded-xl shadow-sm border overflow-hidden">
+        <Table>
+          <TableHeader className="bg-secondary">
+            <TableRow>
+              <TableHead className="w-[80px]">Pos</TableHead>
+              <TableHead>No</TableHead>
+              <TableHead>Driver</TableHead>
+              <TableHead>Team</TableHead>
+              <TableHead>Laps</TableHead>
+              <TableHead>Time/Retired</TableHead>
+              <TableHead className="text-right">PTS</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {results.length > 0 ? (
+              results.map((result, index) => (
+                <TableRow key={index}>
+                  <TableCell className="font-black text-lg">
+                    {result.position || "-"}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground font-mono font-bold">
+                    {result.carNumber || "-"}
+                  </TableCell>
+                  <TableCell className="font-bold">
+                    <Link
+                      href={`/driver/${result.driverId}`}
+                      className="hover:text-red-600 transition-colors cursor-pointer"
+                    >
+                      {result.driverName}
+                    </Link>
+                  </TableCell>
+                  <TableCell className="text-xs font-bold uppercase tracking-wider">
+                    <Link
+                      href={`/team/${result.teamId}`}
+                      className="hover:text-red-600 transition-colors cursor-pointer"
+                    >
+                      {result.teamName}
+                    </Link>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {result.laps}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground font-mono text-xs">
+                    {result.time || result.status || "-"}
+                  </TableCell>
+                  <TableCell className="text-right font-black text-lg">
+                    {result.points}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className="py-12 text-center text-muted-foreground"
+                >
+                  <span className="text-2xl block mb-2">⏱️</span>
+                  No results available for this session yet.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );
